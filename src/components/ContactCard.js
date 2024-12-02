@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native
 import { useNavigation } from '@react-navigation/native';
 
 
-const ContactCard = ({ name, phone, handelNav }) => {
+const ContactCard = ({ name, phone, photo }) => {
     const scaleValue = useRef(new Animated.Value(1)).current;
 
     const handlePressIn = () => {
@@ -26,8 +26,13 @@ const ContactCard = ({ name, phone, handelNav }) => {
             <View
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
+                style={styles.cardContent}
             >
-                <View style={styles.imagePlaceholder} />
+                {photo ? (
+                    <Image source={{ uri: photo }} style={styles.image} />
+                ) : (
+                    <View style={styles.imagePlaceholder} />
+                )}
                 <Text style={styles.name}>{name}</Text>
                 <Text style={styles.phone}>{phone}</Text>
             </View>
