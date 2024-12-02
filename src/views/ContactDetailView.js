@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity, Linking, Alert, ActivityIndicator} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ContactModal from '../components/ContactModal';
 
@@ -7,17 +7,45 @@ const ContactDetailView = ({ route }) => {
     const { name, phone } = route.params; // Correctly access name and phone
     console.log(phone)
     const [modalVisible, setModalVisible] = useState(false);
+    const [canMakeCall, setCanMakeCall] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const phoneUrl = `tel:${phone}`;
+        Linking.canOpenURL(phoneUrl)
+            .then((supported) => {
+                setCanMakeCall(supported);
+            })
+            .catch((err) => console.error("An error occurred", err));
+    }, [phone]);
+
+    const makeCall = () => {
+        setLoading(true);
+        let phoneUrl = `tel:${phone}`;
+        if (canMakeCall) {
+            Linking.openURL(phoneUrl)
+                .then(() => setLoading(false))
+                .catch((err) => {
+                    console.error("An error occurred", err);
+                    setLoading(false);
+                });
+        } else {
+            Alert.alert("Error", "Unable to make a call");
+            setLoading(false);
+        }
+    };
 
     return (
         <View style={styles.container}>
             <View style={styles.headerIcons}>
-                <TouchableOpacity style={styles.iconButton}>
+                <TouchableOpacity style={styles.iconButton} onPress={makeCall}>
                     <Ionicons name="call-outline" size={24} color="black" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.iconButton} onPress={() => setModalVisible(true)}>
                     <Ionicons name="create-outline" size={24} color="black" />
                 </TouchableOpacity>
             </View>
+            {loading && <ActivityIndicator size="small" color="#ffcc00" />}
             <View style={styles.centeredContent}>
                 <View style={styles.cardContainer}>
                     <View style={styles.imagePlaceholder} />
