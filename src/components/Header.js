@@ -21,16 +21,20 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 12,
         backgroundColor: '#1a1a1a',
+        paddingRight: 25,
+        paddingLeft: 25,
     },
     title: {
-        fontSize: 24,
+        fontSize: 40,
         fontWeight: 'bold',
         color: '#fff',
     },
     addButton: {
         backgroundColor: '#333',
-        borderRadius: 16,
+        borderWidth : 1,
+        borderRadius: 14,
         padding: 8,
+        borderColor: '#fff',
     },
 });
 

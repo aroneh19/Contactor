@@ -24,6 +24,8 @@ const styles = StyleSheet.create({
         margin: 16,
         paddingHorizontal: 12,
         height: 40,
+        borderWidth: 1,
+        borderColor: '#fff',
     },
     input: {
         flex: 1,

@@ -14,8 +14,15 @@ const App = () => {
 				screenOptions={{
 					headerStyle: { backgroundColor: "#1a1a1a" },
 					headerTintColor: "#fff",
-				}}>
-				<Stack.Screen name="ContactList" component={ContactView} />
+				}}
+			>
+				{/* Disable default header for ContactList */}
+				<Stack.Screen
+					name="ContactList"
+					component={ContactView}
+					options={{ headerShown: false }} // Disable header
+				/>
+				{/* Keep default header for ContactDetailView */}
 				<Stack.Screen name="ContactDetailView" component={ContactDetailView} />
 			</Stack.Navigator>
 		</NavigationContainer>
