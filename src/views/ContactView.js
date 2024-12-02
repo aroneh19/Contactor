@@ -22,6 +22,8 @@ const ContactView = () => {
 	const [phone, setPhone] = useState("");
 	const [photo, setPhoto] = useState(null);
 
+	const filteredContacts = filterContacts(contacts, searchQuery);
+
 	const loadContacts = async () => {
 		const allContacts = await fileManager.getAllContacts();
 		setContacts(allContacts);
@@ -67,7 +69,7 @@ const ContactView = () => {
 			<Header onAddContact={handleAddContact}/>
 			<SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 			<FlatList
-				data={contacts}
+				data={filteredContacts}
 				keyExtractor={(item) => item.id}
 				renderItem={({ item }) => (
 					<TouchableOpacity
@@ -80,7 +82,6 @@ const ContactView = () => {
 							})
 						}>
 						<ContactCard name={item.name} />
-						<Text style={styles.phoneText}>{item.phone}</Text>
 					</TouchableOpacity>
 				)}
 				numColumns={2}
