@@ -3,8 +3,7 @@ import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native
 import { useNavigation } from '@react-navigation/native';
 
 
-const ContactCard = ({ name, phone }) => {
-    const navigation = useNavigation();
+const ContactCard = ({ name, phone, handelNav }) => {
     const scaleValue = useRef(new Animated.Value(1)).current;
 
     const handlePressIn = () => {
@@ -21,23 +20,17 @@ const ContactCard = ({ name, phone }) => {
         }).start();
     };
 
-    const handlePress = () => {
-            console.log(name)
-            navigation.navigate('ContactDetailView', { name, phone});
-
-    }
 
     return (
         <Animated.View style={[styles.card, { transform: [{ scale: scaleValue }] }]}>
-            <TouchableOpacity
-                onPress={handlePress}
+            <View
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
             >
                 <View style={styles.imagePlaceholder} />
                 <Text style={styles.name}>{name}</Text>
                 <Text style={styles.phone}>{phone}</Text>
-            </TouchableOpacity>
+            </View>
         </Animated.View>
     );
 };

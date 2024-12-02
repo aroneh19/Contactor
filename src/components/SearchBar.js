@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const SearchBar = () => {
+const SearchBar = ({ searchQuery, setSearchQuery }) => {
     return (
         <View style={styles.container}>
             <Ionicons name="search" size={20} color="#ccc" />
@@ -10,6 +10,8 @@ const SearchBar = () => {
                 style={styles.input}
                 placeholder="Search"
                 placeholderTextColor="#ccc"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
             />
         </View>
     );

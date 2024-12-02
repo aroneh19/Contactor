@@ -5,6 +5,7 @@ import ContactModal from '../components/ContactModal';
 
 const ContactDetailView = ({ route }) => {
     const { name, phone } = route.params; // Correctly access name and phone
+    console.log(phone)
     const [modalVisible, setModalVisible] = useState(false);
 
     return (
