@@ -10,36 +10,36 @@ async function ensureDirectoriesExist() {
 }
 
 // Save contact
-export async function saveContact(contactData, imageUri) {
+export async function saveContact(contactInfo, imageUri) {
     await ensureDirectoriesExist();
-
+  
     const contactId = uuidv4();
     const contactFilePath = `${CONTACTS_DIR}/${contactId}.json`;
-
+  
     let imagePath = null;
-    
+  
     // If image is provided
     if (imageUri) {
-        const imageFilename = `${IMAGES_DIR}${contactId}.jpg`;
-        await FileSystem.moveAsync({
-          from: imageUri,
-          to: imageFilename,
-        });
-        imagePath = imageFilename;
-      }
-    
-    // Save contact data 
+      const imageFilename = `${IMAGES_DIR}/${contactId}.jpg`;
+      await FileSystem.moveAsync({
+        from: imageUri,
+        to: imageFilename,
+      });
+      imagePath = imageFilename;
+    }
+  
+    // Save contact data
     const contact = {
-        ...contactData,
-        id: contactId,
-        photo: imagePath,
+      ...contactInfo,
+      id: contactId,
+      photo: imagePath,
     };
-
+  
     await FileSystem.writeAsStringAsync(contactFilePath, JSON.stringify(contact));
-
+  
     return contact;
-}
-
+  }
+  
 // Update contact
 export async function updateContact(contactId, updatedData) {
     const contactFiles = await FileSystem.readDirectoryAsync(CONTACTS_DIR);
@@ -66,7 +66,7 @@ export async function deleteContact(contactId) {
 
             // Delete contact
             await FileSystem.deleteAsync(contactFilePath);
-            return;
+            return true;
         }
     }
 }

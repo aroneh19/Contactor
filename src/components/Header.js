@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AddContactModal from '../components/AddContactModal';
 
 const Header = () => {
     return (
         <View style={styles.header}>
             <Text style={styles.title}>Contacts</Text>
-            <TouchableOpacity style={styles.addButton}>
+            <TouchableOpacity style={styles.addButton} onPress={AddContactModal}>
                 <Ionicons name="add" size={24} color="#fff" />
             </TouchableOpacity>
         </View>
