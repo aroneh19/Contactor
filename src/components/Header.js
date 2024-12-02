@@ -3,16 +3,11 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AddContactModal from "../components/AddContactModal";
 
-const Header = () => {
+const Header = ({ onAddContact }) => {
 	const [isModalVisible, setModalVisible] = useState(false);
 
 	const toggleModal = () => {
 		setModalVisible(!isModalVisible);
-	};
-
-	const handleAddContact = (contact) => {
-		// Handle adding contact here
-		console.log(contact);
 	};
 
 	return (
@@ -25,7 +20,7 @@ const Header = () => {
 			<AddContactModal
 				visible={isModalVisible}
 				onClose={toggleModal}
-				onAddContact={handleAddContact}
+				onAddContact={onAddContact}
 			/>
 		</View>
 	);

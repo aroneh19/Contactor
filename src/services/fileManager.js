@@ -26,7 +26,7 @@ const setupDirectory = async () => {
 };
 
 // Create contact
-export const saveContact = async (name, phoneNumber, photo) => {
+export const saveContact = async (name, phone, photo) => {
 	await setupDirectory();
 
 	const id = Crypto.randomUUID();
@@ -36,7 +36,7 @@ export const saveContact = async (name, phoneNumber, photo) => {
 	const contact = {
 		id,
 		name,
-		phoneNumber,
+		phone,
 		photo,
 	};
 
