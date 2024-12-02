@@ -1,52 +1,172 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import AddContactModal from '../components/AddContactModal';
+import React, { useState, useEffect } from 'react';
+import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { requestMediaLibraryPermissionsAsync, launchImageLibraryAsync, MediaType } from 'expo-image-picker';
 
-const Header = () => {
-    const [isModalVisible, setModalVisible] = useState(false);
+const AddContactModal = ({ visible, onClose, onAddContact }) => {
+    const [name, setName] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [photo, setPhoto] = useState(null);
+    
+    const [selectedImage, setSelectedImage] = useState(null);
 
-    const openModal = () => setModalVisible(true);
-    const closeModal = () => setModalVisible(false);
-    const handleAddContact = (name, phone) => {
-        // Handle adding the contact (e.g., save to a list or backend)
-        console.log(`Contact added: ${name}, ${phone}`);
+    useEffect(() => {
+        if (!visible) {
+            setSelectedImage(null);
+        }
+    }, [visible]);
+
+    const handleSelectImage = async () => {
+        const { status } = await requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('Permission required', 'Camera roll permissions are required to select an image.');
+            return;
+        }
+
+        const result = await launchImageLibraryAsync({
+            mediaTypes: MediaType,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            const imageUri = result.assets[0].uri;
+            setSelectedImage(imageUri); // Update the state with the selected image URI
+            onImageSelected(imageUri); // Call the parent handler with the image URI
+        }
+    };
+    
+
+    const handleAddContact = () => {
+        if (name && phoneNumber) {
+            onAddContact({ name, phoneNumber, photo });
+            setName('');
+            setPhoneNumber('');
+            setPhoto(null);
+            onClose(); // Close modal after adding contact
+        } else {
+            alert('Please fill in all fields');
+        }
     };
 
     return (
-        <View style={styles.header}>
-            <Text style={styles.title}>Contacts</Text>
-            <TouchableOpacity style={styles.addButton} onPress={openModal}>
-                <Ionicons name="add" size={24} color="#fff" />
-            </TouchableOpacity>
-            <AddContactModal
-                visible={isModalVisible}
-                onClose={closeModal}
-                onSubmit={handleAddContact}
-            />
-        </View>
+        <Modal
+            visible={visible}
+            animationType="slide"
+            transparent={true}
+            onRequestClose={onClose}
+        >
+            <View style={styles.modalOverlay}>
+                <View style={styles.modalContainer}>
+                    <Text style={styles.modalTitle}>Add Contact</Text>
+
+                    {/* Image preview */}
+                    {selectedImage && (
+                        <Image
+                            source={{ uri: selectedImage }}
+                            style={styles.imagePreview} // Style for the preview
+                        />
+                    )}
+
+                    <TouchableOpacity style={styles.imageButton} onPress={handleSelectImage}>
+                        <Text style={styles.buttonText}>Select Image</Text>
+                    </TouchableOpacity>
+
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Name"
+                        value={name}
+                        onChangeText={setName}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Phone Number"
+                        keyboardType="phone-pad"
+                        value={phoneNumber}
+                        onChangeText={setPhoneNumber}
+                    />
+
+                    <TouchableOpacity onPress={handleAddContact} style={styles.addButton}>
+                        <Text style={styles.buttonText}>Add Contact</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                        <Text style={styles.buttonText}>Close</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </Modal>
     );
 };
 
+export default AddContactModal;
+
 const styles = StyleSheet.create({
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+    modalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        backgroundColor: '#1a1a1a',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
-    title: {
+    modalContainer: {
+        width: '85%',
+        padding: 20,
+        backgroundColor: '#fff',
+        borderRadius: 15,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    modalTitle: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#fff',
+        color: '#333',
+        marginBottom: 20,
+    },
+    imageButton: {
+        backgroundColor: '#1a73e8',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        marginBottom: 15,
+    },
+    imagePreview: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        borderWidth: 2,
+        borderColor: '#ddd',
+        marginBottom: 15,
+    },
+    input: {
+        width: '100%',
+        height: 50,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 8,
+        paddingHorizontal: 15,
+        marginBottom: 20,
+        fontSize: 16,
     },
     addButton: {
-        backgroundColor: '#333',
-        borderRadius: 16,
-        padding: 8,
+        backgroundColor: '#28a745',
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 10,
+        marginBottom: 10,
+    },
+    closeButton: {
+        backgroundColor: '#dc3545',
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 10,
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });
-
-export default Header;
