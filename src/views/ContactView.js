@@ -46,7 +46,8 @@ const ContactView = () => {
 					</TouchableOpacity>
 				)}
 				numColumns={2}
-				contentContainerStyle={styles.list}
+                columnWrapperStyle={styles.columnWrapper}
+                contentContainerStyle={styles.list}
 			/>
 		</SafeAreaView>
 	);
@@ -58,17 +59,21 @@ const styles = StyleSheet.create({
 		backgroundColor: "#1a1a1a",
 	},
 	list: {
-		padding: 16,
+		paddingHorizontal: 12,
+		paddingBottom: 16,
 	},
 	cardWrapper: {
-		flex: 1,
-		margin: 8,
-		backgroundColor: "#2a2a2a",
-		borderRadius: 10,
-		padding: 16,
-		alignItems: "center",
-		justifyContent: "center",
+		width: "45%", // Keep the smaller size for the cards
+		margin: "2.5%", // Maintain the spacing between cards
+		backgroundColor: "#2a2a2a", // Gray box color
+		borderRadius: 20, // Increase the border radius here (e.g., 20 for a more rounded look)
+		padding: 12,
+	},
+	columnWrapper: {
+		justifyContent: "space-between",
 	},
 });
+
+
 
 export default ContactView;

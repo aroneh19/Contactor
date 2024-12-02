@@ -8,14 +8,14 @@ const ContactCard = ({ name, phone, handelNav }) => {
 
     const handlePressIn = () => {
         Animated.spring(scaleValue, {
-            toValue: 0.95, // Slightly reduce the size
+            toValue: 0.95,
             useNativeDriver: true,
         }).start();
     };
 
     const handlePressOut = () => {
         Animated.spring(scaleValue, {
-            toValue: 1, // Return to original size
+            toValue: 1,
             useNativeDriver: true,
         }).start();
     };
@@ -23,9 +23,10 @@ const ContactCard = ({ name, phone, handelNav }) => {
 
     return (
         <Animated.View style={[styles.card, { transform: [{ scale: scaleValue }] }]}>
-            <View
+            <View 
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
+                style={styles.touchable}
             >
                 <View style={styles.imagePlaceholder} />
                 <Text style={styles.name}>{name}</Text>
@@ -36,32 +37,30 @@ const ContactCard = ({ name, phone, handelNav }) => {
 };
 
 const styles = StyleSheet.create({
-    card: {
-        backgroundColor: '#292929',
-        borderRadius: 0,
-        alignItems: 'center',
-        margin: 8,
-        flex: 1,
-        maxWidth: '47%',
-        paddingBottmom: 0,
-    },
-    imagePlaceholder: {
-        width: 150,
-        height: 120,
-        backgroundColor: '#cc4444',
-        borderRadius: 16,
-        marginBottom: 12,
-        marginTop: 0,
-    },
-    name: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#fdfdfd',
-    },
-    phone: {
-        fontSize: 14,
-        color: '#ccc',
-    },
+  touchable: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  imagePlaceholder: {
+    width: 150,
+    height: 115,
+    backgroundColor: "#D84343",
+    borderRadius: 18,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#FFFFFF",
+    textAlign: "center",
+  },
+  phone: {
+    fontSize: 14,
+    color: "#CCCCCC",
+    textAlign: "center",
+  },
 });
 
 export default ContactCard;
