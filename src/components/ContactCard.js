@@ -23,7 +23,7 @@ const ContactCard = ({ name, phone }) => {
 
     const handlePress = () => {
             console.log(name)
-            navigation.navigate('ContactView', { name, phone});
+            navigation.navigate('ContactDetailView', { name, phone});
 
     }
 
