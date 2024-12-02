@@ -1,62 +1,52 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import AddContactModal from '../components/AddContactModal';
 
-const AddContactModal = ({ visible, onClose, onSubmit }) => {
-    const [name, setName] = React.useState('');
-    const [phone, setPhone] = React.useState('');
+const Header = () => {
+    const [isModalVisible, setModalVisible] = useState(false);
 
-    const handleAddContact = () => {
-        if (name && phone) {
-            onSubmit(name, phone);
-            onClose();
-            setName('');
-            setPhone('');
-        } else {
-            alert('Please fill out both fields.');
-        }
+    const openModal = () => setModalVisible(true);
+    const closeModal = () => setModalVisible(false);
+    const handleAddContact = (name, phone) => {
+        // Handle adding the contact (e.g., save to a list or backend)
+        console.log(`Contact added: ${name}, ${phone}`);
     };
 
     return (
-        <Modal
-            animationType="slide"
-            transparent={true}
-            visible={visible}
-            onRequestClose={onClose}
-        >
-            <View style={styles.modalOverlay}>
-                <View style={styles.modalContainer}>
-                    <Text style={styles.modalTitle}>Add New Contact</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Name"
-                        placeholderTextColor="#ccc"
-                        value={name}
-                        onChangeText={setName}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Phone Number"
-                        placeholderTextColor="#ccc"
-                        value={phone}
-                        onChangeText={setPhone}
-                        keyboardType="phone-pad"
-                    />
-                    <TouchableOpacity
-                        style={styles.submitButton}
-                        onPress={handleAddContact}
-                    >
-                        <Text style={styles.submitButtonText}>Add Contact</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.closeButton}
-                        onPress={onClose}
-                    >
-                        <Text style={styles.closeButtonText}>Close</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </Modal>
+        <View style={styles.header}>
+            <Text style={styles.title}>Contacts</Text>
+            <TouchableOpacity style={styles.addButton} onPress={openModal}>
+                <Ionicons name="add" size={24} color="#fff" />
+            </TouchableOpacity>
+            <AddContactModal
+                visible={isModalVisible}
+                onClose={closeModal}
+                onSubmit={handleAddContact}
+            />
+        </View>
     );
 };
 
-export default AddContactModal;
+const styles = StyleSheet.create({
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#1a1a1a',
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#fff',
+    },
+    addButton: {
+        backgroundColor: '#333',
+        borderRadius: 16,
+        padding: 8,
+    },
+});
+
+export default Header;
