@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#1a1a1a',
     },
     title: {
-        fontSize: 24,
+        fontSize: 32,
         fontWeight: 'bold',
         color: '#fff',
     },
@@ -32,6 +32,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#333',
         borderRadius: 16,
         padding: 8,
+        borderWidth: 1,
+        borderColor: '#fdfdfdfd',
     },
 });
 

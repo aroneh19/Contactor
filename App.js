@@ -14,9 +14,18 @@ const App = () => {
 				screenOptions={{
 					headerStyle: { backgroundColor: "#1a1a1a" },
 					headerTintColor: "#fff",
+					headerTitle: "", // Remove default header title
 				}}>
-				<Stack.Screen name="ContactList" component={ContactView} />
-				<Stack.Screen name="ContactDetailView" component={ContactDetailView} />
+				<Stack.Screen
+					name="ContactList"
+					component={ContactView}
+					options={{ headerShown: false }} // Hide header entirely for ContactView
+				/>
+				<Stack.Screen
+					name="ContactDetailView"
+					component={ContactDetailView}
+					options={{ headerTitle: "", headerBackTitleVisible: false }} // Remove title for ContactDetailView
+				/>
 			</Stack.Navigator>
 		</NavigationContainer>
 	);

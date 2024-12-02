@@ -1,15 +1,14 @@
 import React, { useState } from "react";
-import {SafeAreaView, StyleSheet, FlatList, TouchableOpacity} from "react-native";
+import { SafeAreaView, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import Header from "../components/Header";
 import ContactCard from "../components/ContactCard";
 import SearchBar from "../components/SearchBar";
-import {filterContacts} from "../services/Searching";
-import {ContactDetailView} from "./ContactDetailView";
-import {useNavigation} from "@react-navigation/native";
+import { filterContacts } from "../services/Searching";
+import { useNavigation } from "@react-navigation/native";
 
 const ContactView = () => {
 	const navigation = useNavigation();
-	const [searchQuery, setSearchQuery] = useState('');
+	const [searchQuery, setSearchQuery] = useState("");
 
 	const contacts = [
 		{ id: "1", name: "John Doe", phone: "123-456-7890" },
@@ -21,18 +20,27 @@ const ContactView = () => {
 
 	const filteredContacts = filterContacts(contacts, searchQuery);
 
-
 	return (
 		<SafeAreaView style={styles.container}>
+			{/* Custom Header */}
 			<Header />
+
+			{/* Search Bar */}
 			<SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+
+			{/* Contact List */}
 			<FlatList
 				data={filteredContacts}
 				keyExtractor={(item) => item.id}
 				renderItem={({ item }) => (
 					<TouchableOpacity
 						style={styles.cardWrapper}
-						onPress={() => navigation.navigate('ContactDetailView', { name: item.name, phone: item.phone })}
+						onPress={() =>
+							navigation.navigate("ContactDetailView", {
+								name: item.name,
+								phone: item.phone,
+							})
+						}
 					>
 						<ContactCard name={item.name} />
 					</TouchableOpacity>
@@ -60,7 +68,7 @@ const styles = StyleSheet.create({
 		padding: 16,
 		alignItems: "center",
 		justifyContent: "center",
-	}
+	},
 });
 
 export default ContactView;

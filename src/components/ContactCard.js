@@ -38,25 +38,25 @@ const ContactCard = ({ name, phone, handelNav }) => {
 const styles = StyleSheet.create({
     card: {
         backgroundColor: '#292929',
-        borderRadius: 12,
-        padding: 16,
+        borderRadius: 0,
         alignItems: 'center',
         margin: 8,
         flex: 1,
         maxWidth: '47%',
+        paddingBottmom: 0,
     },
     imagePlaceholder: {
-        width: 80,
-        height: 80,
+        width: 150,
+        height: 120,
         backgroundColor: '#cc4444',
-        borderRadius: 8,
+        borderRadius: 16,
         marginBottom: 12,
+        marginTop: 0,
     },
     name: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#fff',
-        marginBottom: 4,
+        color: '#fdfdfd',
     },
     phone: {
         fontSize: 14,
