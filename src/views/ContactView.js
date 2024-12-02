@@ -12,6 +12,7 @@ import SearchBar from "../components/SearchBar";
 import { filterContacts } from "../services/Searching";
 import { useNavigation } from "@react-navigation/native";
 import * as fileManager from "../services/fileManager"; // Import getAllContacts function
+import * as Contacts from "expo-contacts";
 
 const ContactView = () => {
 	const navigation = useNavigation();
@@ -25,9 +26,51 @@ const ContactView = () => {
 	const filteredContacts = filterContacts(contacts, searchQuery);
 
 	const loadContacts = async () => {
-		const allContacts = await fileManager.getAllContacts();
-		setContacts(allContacts);
+		const allContactsFromFile = await fileManager.getAllContacts();
+
+		// Fetch contacts from the device address book
+		const deviceContacts = await getDeviceContacts();
+
+		// Combine both sets of contacts
+		const allContacts = [...allContactsFromFile, ...deviceContacts];
+
+		// Sort the contacts by name
+		const sortedContacts = sortContacts(allContacts);
+
+		setContacts(sortedContacts);
 	};
+
+	// Function to get contacts from the device
+	const getDeviceContacts = async () => {
+		const { status } = await Contacts.requestPermissionsAsync();
+		if (status !== "granted") {
+			Alert.alert(
+				"Permission required",
+				"You need to grant permission to access contacts."
+			);
+			return [];
+		}
+
+		const { data } = await Contacts.getContactsAsync({
+			fields: [
+				Contacts.Fields.Name,
+				Contacts.Fields.PhoneNumbers,
+				Contacts.Fields.Image,
+			],
+		});
+
+		// Format the device contacts to match your file system format
+		return data.map((contact) => ({
+			id: contact.id, // You can use the device-generated ID or generate your own
+			name: contact.name,
+			phone: contact.phoneNumbers ? contact.phoneNumbers[0].number : "",
+			photo: contact.image ? contact.image.uri : null, // If image exists
+		}));
+	};
+
+	const sortContacts = (contacts) => {
+		return contacts.sort((a, b) => a.name.localeCompare(b.name)); // Sort by name
+	  };
 
 	const handleAddContact = async () => {
 		if (!name || !phone) {
@@ -66,7 +109,7 @@ const ContactView = () => {
 
 	return (
 		<SafeAreaView style={styles.container}>
-			<Header onAddContact={handleAddContact}/>
+			<Header onAddContact={handleAddContact} />
 			<SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 			<FlatList
 				data={filteredContacts}
