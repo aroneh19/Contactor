@@ -53,10 +53,9 @@ const AddContactModal = ({ visible, onClose, onAddContact }) => {
 	};
 
 	const handleAddContact = async () => {
-		if (name && phone) {
+		if (name && phone && photo) {
 			try {
-				const contactInfo = { name, phone };
-				const savedContact = await saveContact(contactInfo, photo);
+				const savedContact = await saveContact(name, phone, photo);
 
 				console.log("Contact saved:", savedContact);
 

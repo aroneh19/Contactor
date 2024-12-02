@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
+	Text,
 	SafeAreaView,
 	StyleSheet,
 	FlatList,
@@ -9,41 +10,69 @@ import Header from "../components/Header";
 import ContactCard from "../components/ContactCard";
 import SearchBar from "../components/SearchBar";
 import { filterContacts } from "../services/Searching";
-import { ContactDetailView } from "./ContactDetailView";
 import { useNavigation } from "@react-navigation/native";
-import { getAllContacts } from "../services/fileManager"; // Import getAllContacts function
+import * as fileManager from "../services/fileManager"; // Import getAllContacts function
 
 const ContactView = () => {
 	const navigation = useNavigation();
 	const [searchQuery, setSearchQuery] = useState("");
-	const [contacts, setContacts] = useState([]); // State to hold contacts
 
-	// Fetch contacts when the component mounts
+	const [contacts, setContacts] = useState([]);
+	const [name, setName] = useState("");
+	const [phone, setPhone] = useState("");
+	const [photo, setPhoto] = useState(null);
+
+	const loadContacts = async () => {
+		const allContacts = await fileManager.getAllContacts();
+		setContacts(allContacts);
+	};
+
+	const handleAddContact = async () => {
+		if (!name || !phone) {
+			Alert.alert("Error", "Name and phone are required.");
+			return;
+		}
+		await fileManager.saveContact(name, phone, photo || "");
+		setName("");
+		setPhone("");
+		setPhoto("");
+		await loadContacts();
+	};
+
+	const handleRemoveContact = async (fileName) => {
+		await fileManager.removeContact(fileName);
+		await loadContacts();
+	};
+
+	const handleClearContacts = async () => {
+		Alert.alert("Confirm", "Are you sure you want to delete all contacts?", [
+			{ text: "Cancel", style: "cancel" },
+			{
+				text: "Delete",
+				style: "destructive",
+				onPress: async () => {
+					await fileManager.cleanDirectory();
+					await loadContacts();
+				},
+			},
+		]);
+	};
+
 	useEffect(() => {
-		const loadContacts = async () => {
-			try {
-				const allContacts = await getAllContacts(); // Get contacts from FileSystem
-				setContacts(allContacts); // Set the contacts state
-			} catch (error) {
-				console.error("Failed to load contacts", error);
-			}
-		};
-
 		loadContacts();
 	}, []);
 
-	const filteredContacts = filterContacts(contacts, searchQuery);
-
 	return (
 		<SafeAreaView style={styles.container}>
-			<Header />
+			<Header onAddContact={handleAddContact}/>
 			<SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 			<FlatList
-				data={filteredContacts}
+				data={contacts}
 				keyExtractor={(item) => item.id}
 				renderItem={({ item }) => (
 					<TouchableOpacity
 						style={styles.cardWrapper}
+						activeOpacity={0.8}
 						onPress={() =>
 							navigation.navigate("ContactDetailView", {
 								name: item.name,
@@ -51,6 +80,7 @@ const ContactView = () => {
 							})
 						}>
 						<ContactCard name={item.name} />
+						<Text style={styles.phoneText}>{item.phone}</Text>
 					</TouchableOpacity>
 				)}
 				numColumns={2}
