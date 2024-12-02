@@ -82,7 +82,11 @@ const ContactView = () => {
 								photo: item.photo,
 							})
 						}>
-						<ContactCard name={item.name} />
+						<ContactCard
+							name={item.name}
+							phone={item.phone}
+							photo={item.photo}
+						/>
 					</TouchableOpacity>
 				)}
 				numColumns={2}
