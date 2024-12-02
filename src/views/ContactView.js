@@ -62,7 +62,7 @@ const ContactView = () => {
 
 	useEffect(() => {
 		loadContacts();
-	}, []);
+	}, [contacts]);
 
 	return (
 		<SafeAreaView style={styles.container}>
@@ -79,6 +79,7 @@ const ContactView = () => {
 							navigation.navigate("ContactDetailView", {
 								name: item.name,
 								phone: item.phone,
+								photo: item.photo,
 							})
 						}>
 						<ContactCard name={item.name} />
