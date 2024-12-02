@@ -1,72 +1,91 @@
-import * as FileSystem from 'expo-file-system';
-import { v4 as uuidv4 } from 'uuid';
+import * as FileSystem from "expo-file-system";
+import * as Crypto from "expo-crypto";
 
-const CONTACTS_DIR = '${FileSystem.documentDirectory}contacts';
-const IMAGES_DIR = '${FileSystem.documentDirectory}images';
+const contactDirectory = `${FileSystem.documentDirectory}contacts`;
 
-async function ensureDirectoriesExist() {
-    await FileSystem.makeDirectoryAsync(CONTACTS_DIR, { intermediates: true });
-    await FileSystem.makeDirectoryAsync(IMAGES_DIR, { intermediates: true });
-}
+const onException = async (cb, errorHandler) => {
+	try {
+		const result = await cb();
+		return result;
+	} catch (err) {
+		if (errorHandler) {
+			return errorHandler(err);
+		}
+		console.error(err);
+		throw err;
+	}
+};
 
-// Save contact
-export async function saveContact(contactInfo, imageUri) {
-    await ensureDirectoriesExist();
-  
-    const contactId = uuidv4();
-    const contactFilePath = `${CONTACTS_DIR}/${contactId}.json`;
-  
-    let imagePath = null;
-  
-    // If image is provided
-    if (imageUri) {
-      const imageFilename = `${IMAGES_DIR}/${contactId}.jpg`;
-      await FileSystem.moveAsync({
-        from: imageUri,
-        to: imageFilename,
-      });
-      imagePath = imageFilename;
-    }
-  
-    // Save contact data
-    const contact = {
-      ...contactInfo,
-      id: contactId,
-      photo: imagePath,
-    };
-  
-    await FileSystem.writeAsStringAsync(contactFilePath, JSON.stringify(contact));
-  
-    return contact;
-  }
-  
-// Update contact
-export async function updateContact(contactId, updatedData) {
-    const contactFiles = await FileSystem.readDirectoryAsync(CONTACTS_DIR);
+const setupDirectory = async () => {
+	const dir = await FileSystem.getInfoAsync(contactDirectory);
+	if (!dir.exists) {
+		await FileSystem.makeDirectoryAsync(contactDirectory, {
+			intermediates: true,
+		});
+	}
+};
 
-    const updatedContact = null;
+// Create contact
+export const saveContact = async (name, phoneNumber, photo) => {
+	await setupDirectory();
 
-    await FileSystem.writeAsStringAsync(contactPath, JSON.stringify(updatedContact));
-    return updatedContact;
-}
+	const id = Crypto.randomUUID();
+	const fileName = `${name}-${id}.json`;
+	const filePath = `${contactDirectory}/${fileName}`;
 
-// Delete contact
-export async function deleteContact(contactId) {
-    const contactFilePath = `${CONTACTS_DIR}/${contactId}.json`;
-    
-    for (const file of contactFiles) {
-        if (file.includes(contactId)) {
-            const contactPath = `${CONTACTS_DIR}${file}`;
-            const contactData = JSON.parse(await FileSystem.readAsStringAsync(contactPath));
-            
-            // Delete image if exists
-            if (contactData.photo) {
-                await FileSystem.deleteAsync(contactData.photo);
-            }
+	const contact = {
+		id,
+		name,
+		phoneNumber,
+		photo,
+	};
 
-            // Delete contact
-            await FileSystem.deleteAsync(contactFilePath);
-            return true;
-        }
-    }
-}
+	await onException(() =>
+		FileSystem.writeAsStringAsync(filePath, JSON.stringify(contact))
+	);
+
+	return { fileName, id };
+};
+
+// Load contact by filename
+export const loadContact = async (fileName) => {
+	const filePath = `${contactDirectory}/${fileName}`;
+
+	return await onException(() => {
+		return FileSystem.readAsStringAsync(filePath).then((content) =>
+			JSON.parse(content)
+		);
+	});
+};
+
+export const getAllContacts = async () => {
+	await setupDirectory();
+
+	const files = await onException(() =>
+		FileSystem.readDirectoryAsync(contactDirectory)
+	);
+	return Promise.all(
+		files.map(async (fileName) => {
+			const contact = await loadContact(fileName);
+			return {
+				fileName,
+				...contact,
+			};
+		})
+	);
+};
+
+// Remove a contact by filename
+export const removeContact = async (fileName) => {
+	const filePath = `${contactDirectory}/${fileName}`;
+	return await onException(() =>
+		FileSystem.deleteAsync(filePath, { idempotent: true })
+	);
+};
+
+// Clean the entire contacts directory
+export const cleanDirectory = async () => {
+	await onException(() =>
+		FileSystem.deleteAsync(contactDirectory, { idempotent: true })
+	);
+};
