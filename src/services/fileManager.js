@@ -1,8 +1,8 @@
 import * as FileSystem from 'expo-file-system';
 import { v4 as uuidv4 } from 'uuid';
 
-const CONTACTS_DIR = '${FileSystem.documentDirectory}/contacts';
-const IMAGES_DIR = '${FileSystem.documentDirectory}/images';
+const CONTACTS_DIR = '${FileSystem.documentDirectory}contacts';
+const IMAGES_DIR = '${FileSystem.documentDirectory}images';
 
 async function ensureDirectoriesExist() {
     await FileSystem.makeDirectoryAsync(CONTACTS_DIR, { intermediates: true });

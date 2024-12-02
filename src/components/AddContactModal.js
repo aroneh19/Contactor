@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { requestMediaLibraryPermissionsAsync, launchImageLibraryAsync, MediaType } from 'expo-image-picker';
+import { saveContact } from '../services/fileManager';
 
 const AddContactModal = ({ visible, onClose, onAddContact }) => {
     const [name, setName] = useState('');
@@ -32,22 +33,37 @@ const AddContactModal = ({ visible, onClose, onAddContact }) => {
         if (!result.canceled) {
             const imageUri = result.assets[0].uri;
             setSelectedImage(imageUri); // Update the state with the selected image URI
-            onImageSelected(imageUri); // Call the parent handler with the image URI
+            setPhoto(imageUri); // Call the parent handler with the image URI
         }
     };
-    
 
-    const handleAddContact = () => {
+    const handleAddContact = async () => {
         if (name && phoneNumber) {
-            onAddContact({ name, phoneNumber, photo });
-            setName('');
-            setPhoneNumber('');
-            setPhoto(null);
-            onClose(); // Close modal after adding contact
+            try {
+                const contactInfo = { name, phoneNumber };
+                const savedContact = await saveContact(contactInfo, photo);
+    
+                console.log('Contact saved:', savedContact);
+    
+                // Reset the form
+                setName('');
+                setPhoneNumber('');
+                setPhoto(null);
+                setSelectedImage(null);
+    
+                // Notify parent component about the new contact
+                onAddContact(savedContact);
+    
+                onClose(); // Close the modal
+            } catch (error) {
+                console.error('Error saving contact:', error);
+                alert('Failed to save contact. Please try again.');
+            }
         } else {
             alert('Please fill in all fields');
         }
     };
+    
 
     return (
         <Modal
