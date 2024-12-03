@@ -33,6 +33,7 @@ export const saveContact = async (name, phone, photo) => {
 	const fileName = `${name}-${id}.json`;
 	const filePath = `${contactDirectory}/${fileName}`;
 
+	// Todo: Should call the Model
 	const contact = {
 		id,
 		name,
