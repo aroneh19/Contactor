@@ -13,7 +13,7 @@ import { Ionicons } from "@expo/vector-icons";
 import ContactModal from "../components/ContactModal";
 
 const ContactDetailView = ({ route }) => {
-	const { name, phone, photo } = route.params; // Correctly access name and phone
+	const { name, phone, photo, contact } = route.params; // Correctly access name and phone
 	const [modalVisible, setModalVisible] = useState(false);
 	const [canMakeCall, setCanMakeCall] = useState(false);
 	const [loading, setLoading] = useState(false);
