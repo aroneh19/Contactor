@@ -7,7 +7,7 @@ import {
 	Linking,
 	Alert,
 	ActivityIndicator,
-    Image
+	Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ContactModal from "../components/ContactModal";
@@ -43,6 +43,12 @@ const ContactDetailView = ({ route }) => {
 		}
 	};
 
+	const handleDeleteContact = async (contactId) => {
+		// Use your `removeContact` function to delete the contact
+		await removeContact(contactId);
+		// Optionally, refresh the contact list or handle the UI after deletion
+	};
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.headerIcons}>
@@ -71,7 +77,7 @@ const ContactDetailView = ({ route }) => {
 				visible={modalVisible}
 				onClose={() => setModalVisible(false)}
 				title="Edit Contact"
-                initialPhoto={photo}
+				initialPhoto={photo}
 				initialName={name}
 				initialPhone={phone}
 				onSubmit={(updatedName, updatedPhone, updatedPhoto) => {
@@ -80,6 +86,8 @@ const ContactDetailView = ({ route }) => {
 					setModalVisible(false);
 				}}
 				submitButtonText="Save Changes"
+				onDelete={handleDeleteContact}
+				contactId={contact.id}
 			/>
 		</View>
 	);
@@ -136,13 +144,13 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		color: "#ccc",
 	},
-    image: {
-        width: 120,
-        height: 120,
-        borderRadius: 12,
-        marginBottom: 16,
-        resizeMode: 'cover',
-    },
+	image: {
+		width: 120,
+		height: 120,
+		borderRadius: 12,
+		marginBottom: 16,
+		resizeMode: "cover",
+	},
 });
 
 export default ContactDetailView;

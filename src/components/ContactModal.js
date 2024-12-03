@@ -6,7 +6,7 @@ import {
 	TouchableOpacity,
 	StyleSheet,
 	Modal,
-    Image
+	Image,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 
@@ -19,6 +19,8 @@ const ContactModal = ({
 	initialPhoto = null,
 	onSubmit,
 	submitButtonText,
+	onDelete,
+	contactId,
 }) => {
 	const [name, setName] = React.useState(initialName);
 	const [phone, setPhone] = React.useState(initialPhone);
@@ -92,6 +94,19 @@ const ContactModal = ({
 						}}>
 						<Text style={styles.submitButtonText}>{submitButtonText}</Text>
 					</TouchableOpacity>
+
+					{/* Delete button */}
+					{contactId && (
+						<TouchableOpacity
+							style={styles.deleteButton}
+							onPress={() => {
+								onDelete(contactId); // Call onDelete when pressed
+								onClose();
+							}}>
+							<Text style={styles.deleteButtonText}>Delete</Text>
+						</TouchableOpacity>
+					)}
+
 					<TouchableOpacity style={styles.closeButton} onPress={onClose}>
 						<Text style={styles.closeButtonText}>Close</Text>
 					</TouchableOpacity>
@@ -150,6 +165,18 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	closeButtonText: {
+		color: "#fff",
+		fontWeight: "bold",
+	},
+	deleteButton: {
+		marginTop: 10,
+		backgroundColor: "#e74c3c", // Red background for delete button
+		padding: 10,
+		borderRadius: 10,
+		width: "100%",
+		alignItems: "center",
+	},
+	deleteButtonText: {
 		color: "#fff",
 		fontWeight: "bold",
 	},
