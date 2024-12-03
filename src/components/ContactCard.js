@@ -29,7 +29,7 @@ const ContactCard = ({ name, phone, photo }) => {
 	return (
 		<Animated.View
 			style={[styles.card, { transform: [{ scale: scaleValue }] }]}>
-			<TouchableOpacity
+			<View
 				onPressIn={handlePressIn}
 				onPressOut={handlePressOut}
 				style={styles.cardContent}>
@@ -39,7 +39,7 @@ const ContactCard = ({ name, phone, photo }) => {
 					<View style={styles.imagePlaceholder} />
 				)}
 				<Text style={styles.name}>{name}</Text>
-			</TouchableOpacity>
+			</View>
 		</Animated.View>
 	);
 };

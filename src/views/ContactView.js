@@ -69,7 +69,7 @@ const ContactView = () => {
 	};
 
 	const sortContacts = (contacts) => {
-		return contacts.sort((a, b) => a.name.localeCompare(b.name)); // Sort by name
+		return contacts.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
 	  };
 
 	const handleAddContact = async () => {
@@ -123,6 +123,7 @@ const ContactView = () => {
 								name: item.name,
 								phone: item.phone,
 								photo: item.photo,
+								contact: item.id,
 							})
 						}>
 						<ContactCard
