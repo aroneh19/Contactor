@@ -45,38 +45,30 @@ const ContactCard = ({ name, phone, photo }) => {
 };
 
 const styles = StyleSheet.create({
-	card: {
-		backgroundColor: "#292929",
-		borderRadius: 12,
-		padding: 16,
-		alignItems: "center",
-		margin: 8,
-		flex: 1,
-		maxWidth: "47%",
-	},
-	image: {
-		width: 80,
-		height: 80,
-		borderRadius: 8,
-		marginBottom: 12,
-	},
-	imagePlaceholder: {
-		width: 80,
-		height: 80,
-		backgroundColor: "#cc4444",
-		borderRadius: 8,
-		marginBottom: 12,
-	},
-	name: {
-		fontSize: 16,
-		fontWeight: "bold",
-		color: "#fff",
-		marginBottom: 4,
-	},
-	phone: {
-		fontSize: 14,
-		color: "#ccc",
-	},
+  touchable: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  imagePlaceholder: {
+    width: 140,
+    height: 115,
+    backgroundColor: "#D84343",
+    borderRadius: 18,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#FFFFFF",
+    textAlign: "center",
+  },
+  phone: {
+    fontSize: 14,
+    color: "#CCCCCC",
+    textAlign: "center",
+  },
 });
 
 export default ContactCard;
