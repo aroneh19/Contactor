@@ -26,7 +26,7 @@ const App = () => {
 					<Stack.Screen
 						name="ContactDetailView"
 						component={ContactDetailView}
-						options={{ title: "" }}
+						options={{ headerShown: false }}
 					/>
 				</Stack.Navigator>
 			</NavigationContainer>
