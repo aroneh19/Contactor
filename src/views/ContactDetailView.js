@@ -11,9 +11,11 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ContactModal from "../components/ContactModal";
+import * as fileManager from "../services/fileManager";
+import * as Contacts from "expo-contacts";
 
-const ContactDetailView = ({ route }) => {
-	const { name, phone, photo, contact } = route.params; // Correctly access name and phone
+const ContactDetailView = ({ route, navigation }) => {
+	const { name, phone, photo, contact, fileName, source } = route.params;
 	const [modalVisible, setModalVisible] = useState(false);
 	const [canMakeCall, setCanMakeCall] = useState(false);
 	const [loading, setLoading] = useState(false);
@@ -43,10 +45,56 @@ const ContactDetailView = ({ route }) => {
 		}
 	};
 
+	const handleUpdateContact = async (updatedName, updatedPhone, updatedPhoto) => {
+		try {
+			if (source === "file") {
+				const photoToSave = updatedPhoto || photo;
+				await fileManager.removeContact(fileName);
+				const newFileName = `${updatedName}-${contact}.json`;
+				await fileManager.saveContact(updatedName, updatedPhone, photoToSave);
+				Alert.alert("Success", "Contact updated successfully.");
+			} else if (source === "device") {
+				const existingContact = await Contacts.getContactByIdAsync(contact);
+				if (!existingContact) {
+					Alert.alert("Error", "Contact not found.");
+					return;
+				}
+
+				const [firstName, ...lastNameParts] = updatedName.split(" ");
+				const lastName = lastNameParts.join(" ");
+				const photoToUpdate = updatedPhoto || existingContact.image?.uri || null;
+
+				const updatedContact = {
+					...existingContact,
+					firstName: firstName || existingContact.firstName,
+					lastName: lastName || existingContact.lastName,
+					phoneNumbers: [{ number: updatedPhone }],
+					image: photoToUpdate ? { uri: photoToUpdate } : null,
+				};
+
+				await Contacts.updateContactAsync(updatedContact);
+				Alert.alert("Success", "Contact updated successfully.");
+			}
+			navigation.goBack();
+		} catch (error) {
+			console.error("Error updating contact:", error);
+			Alert.alert("Error", "Failed to update contact.");
+		}
+	};
+
 	const handleDeleteContact = async (contactId) => {
-		// Use your `removeContact` function to delete the contact
-		await removeContact(contactId);
-		// Optionally, refresh the contact list or handle the UI after deletion
+		try {
+			if (source === "file") {
+				await fileManager.removeContact(fileName);
+			} else if (source === "device") {
+				await Contacts.removeContactAsync(contactId);
+			}
+			Alert.alert("Success", "Contact deleted successfully.");
+			navigation.goBack();
+		} catch (error) {
+			console.error("Failed to delete contact:", error);
+			Alert.alert("Error", "Failed to delete contact.");
+		}
 	};
 
 	return (
@@ -67,12 +115,33 @@ const ContactDetailView = ({ route }) => {
 					{photo ? (
 						<Image source={{ uri: photo }} style={styles.image} />
 					) : (
-						<View style={styles.imagePlaceholder} />
+						<View style={styles.imagePlaceholder}>
+							<Text style={styles.imagePlaceholderText}>No Image</Text>
+						</View>
 					)}
 					<Text style={styles.name}>{name}</Text>
 					<Text style={styles.phone}>{phone}</Text>
 				</View>
 			</View>
+			{/* Delete Button in View */}
+			<TouchableOpacity
+				style={styles.deleteButton}
+				onPress={() => {
+					Alert.alert(
+						"Delete Contact",
+						`Are you sure you want to delete ${name}?`,
+						[
+							{ text: "Cancel", style: "cancel" },
+							{
+								text: "Delete",
+								style: "destructive",
+								onPress: async () => await handleDeleteContact(contact),
+							},
+						]
+					);
+				}}>
+				<Text style={styles.deleteButtonText}>Delete Contact</Text>
+			</TouchableOpacity>
 			<ContactModal
 				visible={modalVisible}
 				onClose={() => setModalVisible(false)}
@@ -81,13 +150,12 @@ const ContactDetailView = ({ route }) => {
 				initialName={name}
 				initialPhone={phone}
 				onSubmit={(updatedName, updatedPhone, updatedPhoto) => {
-					// Handle contact update logic here
-					updateContact(updatedName, updatedPhone, updatedPhoto);
+					handleUpdateContact(updatedName, updatedPhone, updatedPhoto);
 					setModalVisible(false);
 				}}
 				submitButtonText="Save Changes"
 				onDelete={handleDeleteContact}
-				contactId={contact.id}
+				contactId={contact}
 			/>
 		</View>
 	);
@@ -130,7 +198,19 @@ const styles = StyleSheet.create({
 	imagePlaceholder: {
 		width: 120,
 		height: 120,
-		backgroundColor: "#cc4444",
+		backgroundColor: "#ccc",
+		borderRadius: 12,
+		justifyContent: "center",
+		alignItems: "center",
+		marginBottom: 16,
+	},
+	imagePlaceholderText: {
+		color: "#666",
+		fontSize: 14,
+	},
+	image: {
+		width: 120,
+		height: 120,
 		borderRadius: 12,
 		marginBottom: 16,
 	},
@@ -144,12 +224,17 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		color: "#ccc",
 	},
-	image: {
-		width: 120,
-		height: 120,
-		borderRadius: 12,
-		marginBottom: 16,
-		resizeMode: "cover",
+	deleteButton: {
+		marginTop: 20,
+		backgroundColor: "#e74c3c",
+		padding: 10,
+		borderRadius: 10,
+		width: "100%",
+		alignItems: "center",
+	},
+	deleteButtonText: {
+		color: "#fff",
+		fontWeight: "bold",
 	},
 });
 

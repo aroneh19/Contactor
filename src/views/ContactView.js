@@ -30,11 +30,16 @@ const ContactView = () => {
 	const loadContacts = async () => {
 		const allContactsFromFile = await fileManager.getAllContacts();
 
+		const formattedFileContacts = allContactsFromFile.map((contact) => ({
+			...contact,
+			source: "file", // Indicating source
+		}));
+
 		// Fetch contacts from the device address book
 		const deviceContacts = await getDeviceContacts();
 
 		// Combine both sets of contacts
-		const allContacts = [...allContactsFromFile, ...deviceContacts];
+		const allContacts = [...formattedFileContacts, ...deviceContacts];
 
 		// Sort the contacts by name
 		const sortedContacts = sortContacts(allContacts);
@@ -67,6 +72,7 @@ const ContactView = () => {
 			name: contact.name,
 			phone: contact.phoneNumbers ? contact.phoneNumbers[0].number : "",
 			photo: contact.image ? contact.image.uri : null, // If image exists
+			source: "device", // Indicating source
 		}));
 	};
 
@@ -142,6 +148,7 @@ const ContactView = () => {
 								photo: item.photo,
 								contact: item.id,
 								fileName: item.fileName,
+								source: item.source,
 							})
 						}
 						onLongPress={() => {

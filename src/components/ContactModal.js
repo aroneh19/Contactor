@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
 	View,
 	Text,
@@ -11,37 +11,39 @@ import {
 import * as ImagePicker from "expo-image-picker";
 
 const ContactModal = ({
-	visible,
-	onClose,
-	title,
-	initialName = "",
-	initialPhone = "",
-	initialPhoto = null,
-	onSubmit,
-	submitButtonText,
-	onDelete,
-	contactId,
-}) => {
-	const [name, setName] = React.useState(initialName);
-	const [phone, setPhone] = React.useState(initialPhone);
-	const [photo, setPhoto] = React.useState(initialPhoto);
+						  visible,
+						  onClose,
+						  title,
+						  initialName = "",
+						  initialPhone = "",
+						  initialPhoto = null,
+						  onSubmit,
+						  submitButtonText,
+						  onDelete,
+						  contactId,
+					  }) => {
+	const [name, setName] = useState(initialName);
+	const [phone, setPhone] = useState(initialPhone);
+	const [photo, setPhoto] = useState(initialPhoto);
 
-	React.useEffect(() => {
+	// Sync initial values when modal opens
+	useEffect(() => {
 		setName(initialName);
 		setPhone(initialPhone);
 		setPhoto(initialPhoto);
 	}, [initialName, initialPhone, initialPhoto]);
 
+	// Function to open image picker
 	const pickImage = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
-			mediaTypes: ImagePicker.MediaType.Images,
+			mediaTypes: ImagePicker.MediaTypeOptions.Images,
 			allowsEditing: true,
 			aspect: [4, 3],
 			quality: 1,
 		});
 
 		if (!result.canceled) {
-			setPhoto(result.uri); // Set the selected photo URI
+			setPhoto(result.assets[0].uri); // Use the selected photo
 		}
 	};
 
@@ -55,7 +57,7 @@ const ContactModal = ({
 				<View style={styles.modalContainer}>
 					<Text style={styles.modalTitle}>{title}</Text>
 
-					{/* Display the current photo or a placeholder */}
+					{/* Display current photo or placeholder */}
 					{photo ? (
 						<Image source={{ uri: photo }} style={styles.image} />
 					) : (
@@ -64,13 +66,16 @@ const ContactModal = ({
 						</View>
 					)}
 
-					{/* Button to pick an image */}
+					{/* Button to add or change the photo */}
 					<TouchableOpacity
 						style={styles.imagePickerButton}
 						onPress={pickImage}>
-						<Text style={styles.imagePickerButtonText}>Pick an Image</Text>
+						<Text style={styles.imagePickerButtonText}>
+							{photo ? "Change Photo" : "Add Photo"}
+						</Text>
 					</TouchableOpacity>
 
+					{/* Input fields for name and phone */}
 					<TextInput
 						style={styles.input}
 						placeholder="Name"
@@ -86,27 +91,17 @@ const ContactModal = ({
 						onChangeText={setPhone}
 						keyboardType="phone-pad"
 					/>
+
+					{/* Submit button */}
 					<TouchableOpacity
 						style={styles.submitButton}
 						onPress={() => {
-							onSubmit(name, phone);
+							onSubmit(name, phone, photo); // Pass photo as well
 							onClose();
 						}}>
 						<Text style={styles.submitButtonText}>{submitButtonText}</Text>
 					</TouchableOpacity>
-
-					{/* Delete button */}
-					{contactId && (
-						<TouchableOpacity
-							style={styles.deleteButton}
-							onPress={() => {
-								onDelete(contactId); // Call onDelete when pressed
-								onClose();
-							}}>
-							<Text style={styles.deleteButtonText}>Delete</Text>
-						</TouchableOpacity>
-					)}
-
+					{/* Close button */}
 					<TouchableOpacity style={styles.closeButton} onPress={onClose}>
 						<Text style={styles.closeButtonText}>Close</Text>
 					</TouchableOpacity>
@@ -144,6 +139,35 @@ const styles = StyleSheet.create({
 		color: "#fff",
 		marginBottom: 10,
 	},
+	image: {
+		width: 120,
+		height: 120,
+		borderRadius: 12,
+		marginBottom: 16,
+	},
+	imagePlaceholder: {
+		width: 120,
+		height: 120,
+		backgroundColor: "#ccc",
+		borderRadius: 12,
+		justifyContent: "center",
+		alignItems: "center",
+		marginBottom: 16,
+	},
+	imagePlaceholderText: {
+		color: "#666",
+		fontSize: 14,
+	},
+	imagePickerButton: {
+		backgroundColor: "#ffcc00",
+		padding: 10,
+		borderRadius: 10,
+		marginBottom: 16,
+	},
+	imagePickerButtonText: {
+		color: "#000",
+		fontWeight: "bold",
+	},
 	submitButton: {
 		marginTop: 10,
 		backgroundColor: "#ffcc00",
@@ -165,18 +189,6 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	closeButtonText: {
-		color: "#fff",
-		fontWeight: "bold",
-	},
-	deleteButton: {
-		marginTop: 10,
-		backgroundColor: "#e74c3c", // Red background for delete button
-		padding: 10,
-		borderRadius: 10,
-		width: "100%",
-		alignItems: "center",
-	},
-	deleteButtonText: {
 		color: "#fff",
 		fontWeight: "bold",
 	},

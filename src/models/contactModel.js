@@ -1,9 +1,9 @@
 export class Contact {
-	constructor(name, phone, photo = null, fileName) {
+	constructor(id, name, phone, photo = null, fileName) {
 		if (!name || !phone) {
 			throw new Error("Name and phone number are required");
 		}
-
+		//this.id = id;
 		this.name = name;
 		this.phone = phone;
 		this.photo = photo;

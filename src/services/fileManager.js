@@ -1,5 +1,6 @@
 import * as FileSystem from "expo-file-system";
 import * as Crypto from "expo-crypto";
+import {Contact} from "../models/contactModel"
 
 const contactDirectory = `${FileSystem.documentDirectory}contacts`;
 
@@ -34,6 +35,7 @@ export const saveContact = async (name, phone, photo) => {
 	const filePath = `${contactDirectory}/${fileName}`;
 
 	// Todo: Should call the Model
+	// Is using the Model Now from the IMPORT !!! TODO: Aron Skodar!
 	const contact = {
 		id,
 		name,
