@@ -8,11 +8,7 @@ import {
 	StyleSheet,
 	Image,
 } from "react-native";
-import {
-	requestMediaLibraryPermissionsAsync,
-	launchImageLibraryAsync,
-	MediaType,
-} from "expo-image-picker";
+import * as ImagePicker from "expo-image-picker";
 import { saveContact } from "../services/fileManager";
 
 const AddContactModal = ({ visible, onClose, onAddContact }) => {
@@ -28,27 +24,33 @@ const AddContactModal = ({ visible, onClose, onAddContact }) => {
 		}
 	}, [visible]);
 
-	const handleSelectImage = async () => {
-		const { status } = await requestMediaLibraryPermissionsAsync();
-		if (status !== "granted") {
-			Alert.alert(
-				"Permission required",
-				"Camera roll permissions are required to select an image."
-			);
-			return;
-		}
+	// Function to open camera or gallery
+	const handleImageSelection = async (type) => {
+		let result;
+		try {
+			if (type === "camera") {
+				result = await ImagePicker.launchCameraAsync({
+					allowsEditing: true,
+					aspect: [4, 3],
+					quality: 1,
+				});
+			} else if (type === "gallery") {
+				result = await ImagePicker.launchImageLibraryAsync({
+					mediaTypes: ImagePicker.MediaTypeOptions.Images,
+					allowsEditing: true,
+					aspect: [4, 3],
+					quality: 1,
+				});
+			}
 
-		const result = await launchImageLibraryAsync({
-			mediaTypes: MediaType,
-			allowsEditing: true,
-			aspect: [4, 3],
-			quality: 1,
-		});
-
-		if (!result.canceled) {
-			const imageUri = result.assets[0].uri;
-			setSelectedImage(imageUri); // Update the state with the selected image URI
-			setPhoto(imageUri); // Call the parent handler with the image URI
+			if (!result.canceled) {
+				const selectedUri = result.assets[0].uri;
+				setPhoto(selectedUri); // Update photo state
+				setSelectedImage(selectedUri); // Update selected image state
+			}
+		} catch (error) {
+			console.error("Error selecting image:", error);
+			alert("Failed to select image. Please try again.");
 		}
 	};
 
@@ -92,11 +94,23 @@ const AddContactModal = ({ visible, onClose, onAddContact }) => {
 						/>
 					)}
 
-					<TouchableOpacity
-						style={styles.imageButton}
-						onPress={handleSelectImage}>
-						<Text style={styles.buttonText}>Select Image</Text>
-					</TouchableOpacity>
+					<View
+						style={{
+							flexDirection: "row",
+							justifyContent: "space-between",
+							width: "100%",
+						}}>
+						<TouchableOpacity
+							style={[styles.imageButton, { marginRight: 10 }]}
+							onPress={() => handleImageSelection("camera")}>
+							<Text style={styles.buttonText}>Use Camera</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={styles.imageButton}
+							onPress={() => handleImageSelection("gallery")}>
+							<Text style={styles.buttonText}>Choose from Gallery</Text>
+						</TouchableOpacity>
+					</View>
 
 					<TextInput
 						style={styles.input}
