@@ -27,24 +27,26 @@ const Header = ({ onAddContact }) => {
 };
 
 const styles = StyleSheet.create({
-	header: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		alignItems: "center",
-		paddingHorizontal: 16,
-		paddingVertical: 12,
-		backgroundColor: "#1a1a1a",
-	},
-	title: {
-		fontSize: 24,
-		fontWeight: "bold",
-		color: "#fff",
-	},
-	addButton: {
-		backgroundColor: "#333",
-		borderRadius: 16,
-		padding: 8,
-	},
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#1a1a1a',
+    },
+    title: {
+        fontSize: 38,
+        fontWeight: 'bold',
+        color: '#fff',
+    },
+    addButton: {
+        backgroundColor: '#333',
+        borderRadius: 16,
+        padding: 8,
+        borderWidth: 1,
+        borderColor: '#fdfdfdfd',
+    },
 });
 
 export default Header;
