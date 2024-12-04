@@ -5,6 +5,7 @@ import {
 	StyleSheet,
 	FlatList,
 	TouchableOpacity,
+	Alert,
 } from "react-native";
 import Header from "../components/Header";
 import ContactCard from "../components/ContactCard";
@@ -24,6 +25,7 @@ const ContactView = () => {
 	const [photo, setPhoto] = useState(null);
 
 	const filteredContacts = filterContacts(contacts, searchQuery);
+	//fileManager.cleanDirectory();
 
 	const loadContacts = async () => {
 		const allContactsFromFile = await fileManager.getAllContacts();
@@ -70,23 +72,38 @@ const ContactView = () => {
 
 	const sortContacts = (contacts) => {
 		return contacts.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
-	  };
+	};
 
-	const handleAddContact = async () => {
+	const handleAddContact = async (contact) => {
+		const { name, phone, photo } = contact;
 		if (!name || !phone) {
 			Alert.alert("Error", "Name and phone are required.");
 			return;
 		}
-		await fileManager.saveContact(name, phone, photo || "");
-		setName("");
-		setPhone("");
-		setPhoto("");
-		await loadContacts();
+		try {
+			await fileManager.saveContact(name, phone, photo || "");
+			await loadContacts(); // Reload contacts after adding
+		} catch (error) {
+			console.error("Error saving contact:", error);
+			Alert.alert("Error", "Failed to save contact.");
+		}
 	};
 
 	const handleRemoveContact = async (fileName) => {
-		await fileManager.removeContact(fileName);
-		await loadContacts();
+		try {
+			// Optimistically update the state
+			setContacts((prevContacts) =>
+				prevContacts.filter((contact) => contact.fileName !== fileName)
+			);
+
+			// Remove the file
+			await fileManager.removeContact(fileName);
+		} catch (error) {
+			console.error("Failed to remove contact:", error);
+		} finally {
+			// Reload contacts to ensure state consistency
+			await loadContacts();
+		}
 	};
 
 	const handleClearContacts = async () => {
@@ -124,8 +141,25 @@ const ContactView = () => {
 								phone: item.phone,
 								photo: item.photo,
 								contact: item.id,
+								fileName: item.fileName,
 							})
-						}>
+						}
+						onLongPress={() => {
+							Alert.alert(
+								"Delete Contact",
+								`Are you sure you want to delete ${item.name}?`,
+								[
+									{ text: "Cancel", style: "cancel" },
+									{
+										text: "Delete",
+										style: "destructive",
+										onPress: async () => {
+											await handleRemoveContact(item.fileName);
+										},
+									},
+								]
+							);
+						}}>
 						<ContactCard
 							name={item.name}
 							phone={item.phone}

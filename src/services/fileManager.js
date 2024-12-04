@@ -39,6 +39,7 @@ export const saveContact = async (name, phone, photo) => {
 		name,
 		phone,
 		photo,
+		fileName,
 	};
 
 	await onException(() =>

@@ -55,9 +55,8 @@ const AddContactModal = ({ visible, onClose, onAddContact }) => {
 	const handleAddContact = async () => {
 		if (name && phone && photo) {
 			try {
-				const savedContact = await saveContact(name, phone, photo);
-
-				console.log("Contact saved:", savedContact);
+				const savedContact = { name, phone, photo };
+				onAddContact(savedContact); // Pass contact details to the parent
 
 				// Reset the form
 				setName("");
@@ -65,13 +64,10 @@ const AddContactModal = ({ visible, onClose, onAddContact }) => {
 				setPhoto(null);
 				setSelectedImage(null);
 
-				// Notify parent component about the new contact
-				onAddContact(savedContact);
-
 				onClose(); // Close the modal
 			} catch (error) {
-				console.error("Error saving contact:", error);
-				alert("Failed to save contact. Please try again.");
+				console.error("Error adding contact:", error);
+				alert("Failed to add contact. Please try again.");
 			}
 		} else {
 			alert("Please fill in all fields");
