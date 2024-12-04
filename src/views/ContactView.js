@@ -14,12 +14,13 @@ import { filterContacts } from "../services/Searching";
 import { useNavigation } from "@react-navigation/native";
 import * as fileManager from "../services/fileManager"; // Import getAllContacts function
 import * as Contacts from "expo-contacts";
+import {useContacts} from "../Context/AppContext"
 
 const ContactView = () => {
 	const navigation = useNavigation();
 	const [searchQuery, setSearchQuery] = useState("");
-
-	const [contacts, setContacts] = useState([]);
+	const {contacts, setContacts} = useContacts();
+	//const [contacts, setContacts] = useState([]);
 	const [name, setName] = useState("");
 	const [phone, setPhone] = useState("");
 	const [photo, setPhoto] = useState(null);
