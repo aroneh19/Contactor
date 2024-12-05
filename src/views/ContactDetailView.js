@@ -89,7 +89,7 @@ const ContactDetailView = ({ route, navigation }) => {
 			navigation.goBack();
 		} catch (error) {
 			console.error("Error updating contact:", error);
-			Alert.alert("Error", "Failed to update contact.");
+			Alert.alert("Invalid phone number", "Must start with 6 or higher, contain only digits, and be 7 digits long");
 		}
 	};
 
