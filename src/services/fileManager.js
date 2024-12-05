@@ -34,33 +34,31 @@ export const saveContact = async (name, phone, photo) => {
 	const fileName = `${name}-${id}.json`;
 	const filePath = `${contactDirectory}/${fileName}`;
 
-	// Todo: Should call the Model
-	// Is using the Model Now from the IMPORT !!! TODO: Aron Skodar!
-	const contact = {
-		id,
-		name,
-		phone,
-		photo,
-		fileName,
-	};
+	// Create a new Contact instance
+	const contact = new Contact(id, name, phone, photo, fileName);
 
+	// Save the contact using its toJSON method
 	await onException(() =>
-		FileSystem.writeAsStringAsync(filePath, JSON.stringify(contact))
+		FileSystem.writeAsStringAsync(filePath, JSON.stringify(contact.toJSON()))
 	);
 
 	return { fileName, id };
 };
 
+
 // Load contact by filename
 export const loadContact = async (fileName) => {
 	const filePath = `${contactDirectory}/${fileName}`;
 
-	return await onException(() => {
-		return FileSystem.readAsStringAsync(filePath).then((content) =>
-			JSON.parse(content)
-		);
-	});
+	const content = await onException(() =>
+		FileSystem.readAsStringAsync(filePath)
+	);
+
+	// Reconstruct the Contact instance using fromJSON
+	const jsonData = JSON.parse(content);
+	return Contact.fromJSON(jsonData);
 };
+
 
 export const getAllContacts = async () => {
 	await setupDirectory();
