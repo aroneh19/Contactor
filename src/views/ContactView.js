@@ -88,8 +88,7 @@ const ContactView = () => {
 			await fileManager.saveContact(name, phone, photo || "");
 			await loadContacts(); // Reload contacts after adding
 		} catch (error) {
-			console.error("Error saving contact:", error);
-			Alert.alert("Error", "Failed to save contact.");
+			Alert.alert("Invalid Phone Number", "Must start with 6 or higher, contain only digits, and be 7 digits long");
 		}
 	};
 

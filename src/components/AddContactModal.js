@@ -16,14 +16,17 @@ const AddContactModal = ({ visible, onClose, onAddContact }) => {
 	const [photo, setPhoto] = useState(null);
 
 	const [selectedImage, setSelectedImage] = useState(null);
+	const [errorMessage, setErrorMessage] = useState("");
+	const [errorVisible, setErrorVisible] = useState(false);
 
 	useEffect(() => {
 		if (!visible) {
 			setSelectedImage(null);
+			setErrorMessage("");
+			setErrorVisible(false);
 		}
 	}, [visible]);
 
-	// Function to open camera or gallery
 	const handleImageSelection = async (type) => {
 		let result;
 		try {
@@ -44,12 +47,12 @@ const AddContactModal = ({ visible, onClose, onAddContact }) => {
 
 			if (!result.canceled) {
 				const selectedUri = result.assets[0].uri;
-				setPhoto(selectedUri); // Update photo state
-				setSelectedImage(selectedUri); // Update selected image state
+				setPhoto(selectedUri);
+				setSelectedImage(selectedUri);
 			}
 		} catch (error) {
 			console.error("Error selecting image:", error);
-			alert("Failed to select image. Please try again.");
+			showErrorMessage("Failed to select image. Please try again.");
 		}
 	};
 
@@ -57,7 +60,7 @@ const AddContactModal = ({ visible, onClose, onAddContact }) => {
 		if (name && phone && photo) {
 			try {
 				const savedContact = { name, phone, photo };
-				onAddContact(savedContact); // Pass contact details to the parent
+				onAddContact(savedContact);
 
 				// Reset the form
 				setName("");
@@ -65,14 +68,19 @@ const AddContactModal = ({ visible, onClose, onAddContact }) => {
 				setPhoto(null);
 				setSelectedImage(null);
 
-				onClose(); // Close the modal
+				onClose();
 			} catch (error) {
 				console.error("Error adding contact:", error);
-				alert("Failed to add contact. Please try again.");
+				showErrorMessage("Failed to add contact. Please try again.");
 			}
 		} else {
-			alert("Please fill in all fields");
+			showErrorMessage("Please fill in all fields.");
 		}
+	};
+
+	const showErrorMessage = (message) => {
+		setErrorMessage(message);
+		setErrorVisible(true);
 	};
 
 	return (
@@ -85,11 +93,10 @@ const AddContactModal = ({ visible, onClose, onAddContact }) => {
 				<View style={styles.modalContainer}>
 					<Text style={styles.modalTitle}>Add Contact</Text>
 
-					{/* Image preview */}
 					{selectedImage && (
 						<Image
 							source={{ uri: selectedImage }}
-							style={styles.imagePreview} // Style for the preview
+							style={styles.imagePreview}
 						/>
 					)}
 
@@ -134,6 +141,24 @@ const AddContactModal = ({ visible, onClose, onAddContact }) => {
 					</TouchableOpacity>
 				</View>
 			</View>
+
+			{/* Error Message Modal */}
+			<Modal
+				visible={errorVisible}
+				transparent={true}
+				animationType="fade"
+				onRequestClose={() => setErrorVisible(false)}>
+				<View style={styles.errorOverlay}>
+					<View style={styles.errorContainer}>
+						<Text style={styles.errorText}>{errorMessage}</Text>
+						<TouchableOpacity
+							style={styles.closeButton}
+							onPress={() => setErrorVisible(false)}>
+							<Text style={styles.buttonText}>Close</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+			</Modal>
 		</Modal>
 	);
 };
@@ -207,5 +232,24 @@ const styles = StyleSheet.create({
 		color: "#fff",
 		fontSize: 16,
 		fontWeight: "bold",
+	},
+	errorOverlay: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		backgroundColor: "rgba(0, 0, 0, 0.5)",
+	},
+	errorContainer: {
+		width: "80%",
+		padding: 20,
+		backgroundColor: "#f8d7da",
+		borderRadius: 10,
+		alignItems: "center",
+	},
+	errorText: {
+		color: "#721c24",
+		fontSize: 16,
+		textAlign: "center",
+		marginBottom: 15,
 	},
 });
