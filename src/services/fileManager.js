@@ -1,6 +1,6 @@
 import * as FileSystem from "expo-file-system";
 import * as Crypto from "expo-crypto";
-import {Contact} from "../models/contactModel"
+import { Contact } from "../models/contactModel";
 
 const contactDirectory = `${FileSystem.documentDirectory}contacts`;
 
@@ -30,6 +30,13 @@ const setupDirectory = async () => {
 export const saveContact = async (name, phone, photo) => {
 	await setupDirectory();
 
+	// Validate the phone number
+	if (!Contact.validatephone(phone)) {
+		throw new Error(
+			"Invalid phone number. Must start with 6 or higher, contain only digits, and be 7 digits long."
+		);
+	}
+
 	const id = Crypto.randomUUID();
 	const fileName = `${name}-${id}.json`;
 	const filePath = `${contactDirectory}/${fileName}`;
@@ -45,7 +52,6 @@ export const saveContact = async (name, phone, photo) => {
 	return { fileName, id };
 };
 
-
 // Load contact by filename
 export const loadContact = async (fileName) => {
 	const filePath = `${contactDirectory}/${fileName}`;
@@ -58,7 +64,6 @@ export const loadContact = async (fileName) => {
 	const jsonData = JSON.parse(content);
 	return Contact.fromJSON(jsonData);
 };
-
 
 export const getAllContacts = async () => {
 	await setupDirectory();

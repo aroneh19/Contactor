@@ -11,17 +11,15 @@ import {
 import * as ImagePicker from "expo-image-picker";
 
 const ContactModal = ({
-						  visible,
-						  onClose,
-						  title,
-						  initialName = "",
-						  initialPhone = "",
-						  initialPhoto = null,
-						  onSubmit,
-						  submitButtonText,
-						  onDelete,
-						  contactId,
-					  }) => {
+	visible,
+	onClose,
+	title,
+	initialName = "",
+	initialPhone = "",
+	initialPhoto = null,
+	onSubmit,
+	submitButtonText
+}) => {
 	const [name, setName] = useState(initialName);
 	const [phone, setPhone] = useState(initialPhone);
 	const [photo, setPhoto] = useState(initialPhoto);
@@ -33,17 +31,32 @@ const ContactModal = ({
 		setPhoto(initialPhoto);
 	}, [initialName, initialPhone, initialPhoto]);
 
-	// Function to open image picker
-	const pickImage = async () => {
-		let result = await ImagePicker.launchImageLibraryAsync({
-			mediaTypes: ImagePicker.MediaTypeOptions.Images,
-			allowsEditing: true,
-			aspect: [4, 3],
-			quality: 1,
-		});
+	// Function to open camera or gallery
+	const handleImageSelection = async (type) => {
+		let result;
+		try {
+			if (type === "camera") {
+				result = await ImagePicker.launchCameraAsync({
+					allowsEditing: true,
+					aspect: [4, 3],
+					quality: 1,
+				});
+			} else if (type === "gallery") {
+				result = await ImagePicker.launchImageLibraryAsync({
+					mediaTypes: ImagePicker.MediaType,
+					allowsEditing: true,
+					aspect: [4, 3],
+					quality: 1,
+				});
+			}
 
-		if (!result.canceled) {
-			setPhoto(result.assets[0].uri); // Use the selected photo
+			if (!result.canceled) {
+				const selectedUri = result.assets[0].uri;
+				setPhoto(selectedUri); // Update photo state
+			}
+		} catch (error) {
+			console.error("Error selecting image:", error);
+			alert("Failed to select image. Please try again.");
 		}
 	};
 
@@ -67,13 +80,18 @@ const ContactModal = ({
 					)}
 
 					{/* Button to add or change the photo */}
-					<TouchableOpacity
-						style={styles.imagePickerButton}
-						onPress={pickImage}>
-						<Text style={styles.imagePickerButtonText}>
-							{photo ? "Change Photo" : "Add Photo"}
-						</Text>
-					</TouchableOpacity>
+					<View style={styles.imageButtonsContainer}>
+						<TouchableOpacity
+							style={styles.imagePickerButton}
+							onPress={() => handleImageSelection("gallery")}>
+							<Text style={styles.imagePickerButtonText}>Upload Photo</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={styles.imagePickerButton}
+							onPress={() => handleImageSelection("camera")}>
+							<Text style={styles.imagePickerButtonText}> Take Photo </Text>
+						</TouchableOpacity>
+					</View>
 
 					{/* Input fields for name and phone */}
 					<TextInput
@@ -167,6 +185,12 @@ const styles = StyleSheet.create({
 	imagePickerButtonText: {
 		color: "#000",
 		fontWeight: "bold",
+	},
+	imageButtonsContainer: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		width: "100%",
+		marginBottom: 16,
 	},
 	submitButton: {
 		marginTop: 10,

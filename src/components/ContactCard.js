@@ -4,12 +4,10 @@ import {
 	Text,
 	StyleSheet,
 	Animated,
-	TouchableOpacity,
 	Image,
 } from "react-native"; // Add Image import here
-import { useNavigation } from "@react-navigation/native";
 
-const ContactCard = ({ name, phone, photo }) => {
+const ContactCard = ({ name, photo }) => {
 	const scaleValue = useRef(new Animated.Value(1)).current;
 
 	const handlePressIn = () => {
