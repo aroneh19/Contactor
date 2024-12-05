@@ -20,11 +20,10 @@ const ContactView = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 
 	const [contacts, setContacts] = useState([]);
-	const [name, setName] = useState("");
-	const [phone, setPhone] = useState("");
-	const [photo, setPhoto] = useState(null);
 
 	const filteredContacts = filterContacts(contacts, searchQuery);
+
+	// Just in case if we need to clean all the contacts
 	//fileManager.cleanDirectory();
 
 	const loadContacts = async () => {
