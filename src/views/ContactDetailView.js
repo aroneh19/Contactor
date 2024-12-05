@@ -93,6 +93,21 @@ const ContactDetailView = ({ route, navigation }) => {
 		}
 	};
 
+	const handleDeleteContact = async (contactId) => {
+		try {
+			if (source === "file") {
+				await fileManager.removeContact(fileName);
+			} else if (source === "device") {
+				await Contacts.removeContactAsync(contactId);
+			}
+			Alert.alert("Success", "Contact deleted successfully.");
+			navigation.goBack();
+		} catch (error) {
+			console.error("Failed to delete contact:", error);
+			Alert.alert("Error", "Failed to delete contact.");
+		}
+	};
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.headerIcons}>
@@ -121,6 +136,25 @@ const ContactDetailView = ({ route, navigation }) => {
 					<Text style={styles.phone}>{phone}</Text>
 				</View>
 			</View>
+			{/* Delete Button in View */}
+			<TouchableOpacity
+				style={styles.deleteButton}
+				onPress={() => {
+					Alert.alert(
+						"Delete Contact",
+						`Are you sure you want to delete ${name}?`,
+						[
+							{ text: "Cancel", style: "cancel" },
+							{
+								text: "Delete",
+								style: "destructive",
+								onPress: async () => await handleDeleteContact(contact),
+							},
+						]
+					);
+				}}>
+				<Text style={styles.deleteButtonText}>Delete Contact</Text>
+			</TouchableOpacity>
 			<ContactModal
 				visible={modalVisible}
 				onClose={() => setModalVisible(false)}
