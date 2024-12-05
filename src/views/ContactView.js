@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-	Text,
 	SafeAreaView,
 	StyleSheet,
 	FlatList,
@@ -14,12 +13,12 @@ import { filterContacts } from "../services/Searching";
 import { useNavigation } from "@react-navigation/native";
 import * as fileManager from "../services/fileManager"; // Import getAllContacts function
 import * as Contacts from "expo-contacts";
-import {useContacts} from "../Context/AppContext"
+import { useContacts } from "../Context/AppContext";
 
 const ContactView = () => {
 	const navigation = useNavigation();
 	const [searchQuery, setSearchQuery] = useState("");
-	const {contacts, setContacts} = useContacts();
+	const { contacts, setContacts } = useContacts();
 
 	const filteredContacts = filterContacts(contacts, searchQuery);
 
@@ -152,11 +151,7 @@ const ContactView = () => {
 								]
 							);
 						}}>
-						<ContactCard
-							name={item.name}
-							phone={item.phone}
-							photo={item.photo}
-						/>
+						<ContactCard name={item.name} photo={item.photo} />
 					</TouchableOpacity>
 				)}
 				numColumns={2}

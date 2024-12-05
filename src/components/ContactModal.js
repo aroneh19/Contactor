@@ -18,9 +18,7 @@ const ContactModal = ({
 	initialPhone = "",
 	initialPhoto = null,
 	onSubmit,
-	submitButtonText,
-	onDelete,
-	contactId,
+	submitButtonText
 }) => {
 	const [name, setName] = useState(initialName);
 	const [phone, setPhone] = useState(initialPhone);
