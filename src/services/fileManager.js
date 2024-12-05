@@ -12,7 +12,6 @@ const onException = async (cb, errorHandler) => {
 		if (errorHandler) {
 			return errorHandler(err);
 		}
-		console.error(err);
 		throw err;
 	}
 };

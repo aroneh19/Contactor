@@ -55,7 +55,6 @@ const ContactModal = ({
 				setPhoto(selectedUri); // Update photo state
 			}
 		} catch (error) {
-			console.error("Error selecting image:", error);
 			alert("Failed to select image. Please try again.");
 		}
 	};
