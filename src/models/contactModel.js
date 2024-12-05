@@ -12,7 +12,7 @@ export class Contact {
 
 	// Method to validate phone number
 	static validatephone(phone) {
-		const phoneRegex = /^[6-9][0-9]{6}$/; // Starts with 6-9 and is exactly 7 digits long
+		const phoneRegex = /^[4-9][0-9]{6}$/; // Starts with 6-9 and is exactly 7 digits long
 		return phoneRegex.test(phone);
 	}
 
