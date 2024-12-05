@@ -38,7 +38,6 @@ const ContactDetailView = ({ route, navigation }) => {
 			Linking.openURL(phoneUrl)
 				.then(() => setLoading(false))
 				.catch((err) => {
-					console.error("An error occurred", err);
 					setLoading(false);
 				});
 		} else {
@@ -88,8 +87,7 @@ const ContactDetailView = ({ route, navigation }) => {
 			Alert.alert("Success", "Contact updated successfully.");
 			navigation.goBack();
 		} catch (error) {
-			console.error("Error updating contact:", error);
-			Alert.alert("Error", "Failed to update contact.");
+			Alert.alert("Invalid phone number", "Must start with 6 or higher, contain only digits, and be 7 digits long");
 		}
 	};
 
@@ -103,7 +101,6 @@ const ContactDetailView = ({ route, navigation }) => {
 			Alert.alert("Success", "Contact deleted successfully.");
 			navigation.goBack();
 		} catch (error) {
-			console.error("Failed to delete contact:", error);
 			Alert.alert("Error", "Failed to delete contact.");
 		}
 	};

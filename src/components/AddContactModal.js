@@ -51,7 +51,6 @@ const AddContactModal = ({ visible, onClose, onAddContact }) => {
 				setSelectedImage(selectedUri);
 			}
 		} catch (error) {
-			console.error("Error selecting image:", error);
 			showErrorMessage("Failed to select image. Please try again.");
 		}
 	};
@@ -70,7 +69,6 @@ const AddContactModal = ({ visible, onClose, onAddContact }) => {
 
 				onClose();
 			} catch (error) {
-				console.error("Error adding contact:", error);
 				showErrorMessage("Failed to add contact. Please try again.");
 			}
 		} else {
