@@ -36,7 +36,7 @@ const AddContactModal = ({ visible, onClose, onAddContact }) => {
 				});
 			} else if (type === "gallery") {
 				result = await ImagePicker.launchImageLibraryAsync({
-					mediaTypes: ImagePicker.MediaTypeOptions.Images,
+					mediaTypes: ImagePicker.MediaType,
 					allowsEditing: true,
 					aspect: [4, 3],
 					quality: 1,
@@ -101,14 +101,14 @@ const AddContactModal = ({ visible, onClose, onAddContact }) => {
 							width: "100%",
 						}}>
 						<TouchableOpacity
-							style={[styles.imageButton, { marginRight: 10 }]}
-							onPress={() => handleImageSelection("camera")}>
-							<Text style={styles.buttonText}>Use Camera</Text>
+							style={styles.imageButton}
+							onPress={() => handleImageSelection("gallery")}>
+							<Text style={styles.buttonText}>Upload Photo</Text>
 						</TouchableOpacity>
 						<TouchableOpacity
 							style={styles.imageButton}
-							onPress={() => handleImageSelection("gallery")}>
-							<Text style={styles.buttonText}>Choose from Gallery</Text>
+							onPress={() => handleImageSelection("camera")}>
+							<Text style={styles.buttonText}> Take Photo </Text>
 						</TouchableOpacity>
 					</View>
 

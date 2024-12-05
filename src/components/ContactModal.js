@@ -36,23 +36,29 @@ const ContactModal = ({
 	// Function to open camera or gallery
 	const handleImageSelection = async (type) => {
 		let result;
-		if (type === "camera") {
-			result = await ImagePicker.launchCameraAsync({
-				allowsEditing: true,
-				aspect: [4, 3],
-				quality: 1,
-			});
-		} else if (type === "gallery") {
-			result = await ImagePicker.launchImageLibraryAsync({
-				mediaTypes: ImagePicker.MediaType.Images,
-				allowsEditing: true,
-				aspect: [4, 3],
-				quality: 1,
-			});
-		}
+		try {
+			if (type === "camera") {
+				result = await ImagePicker.launchCameraAsync({
+					allowsEditing: true,
+					aspect: [4, 3],
+					quality: 1,
+				});
+			} else if (type === "gallery") {
+				result = await ImagePicker.launchImageLibraryAsync({
+					mediaTypes: ImagePicker.MediaType,
+					allowsEditing: true,
+					aspect: [4, 3],
+					quality: 1,
+				});
+			}
 
-		if (!result.canceled) {
-			setPhoto(result.assets[0].uri); // Update photo state with selected image
+			if (!result.canceled) {
+				const selectedUri = result.assets[0].uri;
+				setPhoto(selectedUri); // Update photo state
+			}
+		} catch (error) {
+			console.error("Error selecting image:", error);
+			alert("Failed to select image. Please try again.");
 		}
 	};
 
@@ -85,7 +91,7 @@ const ContactModal = ({
 						<TouchableOpacity
 							style={styles.imagePickerButton}
 							onPress={() => handleImageSelection("camera")}>
-							<Text style={styles.imagePickerButtonText}>Take Photo</Text>
+							<Text style={styles.imagePickerButtonText}> Take Photo </Text>
 						</TouchableOpacity>
 					</View>
 
