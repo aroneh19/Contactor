@@ -13,8 +13,10 @@ import { Ionicons } from "@expo/vector-icons";
 import ContactModal from "../components/ContactModal";
 import * as fileManager from "../services/fileManager";
 import * as Contacts from "expo-contacts";
+import { useContacts } from "../Context/AppContext";
 
 const ContactDetailView = ({ route, navigation }) => {
+	const { contacts, setContacts } = useContacts();
 	const { name, phone, photo, contact, fileName, source } = route.params;
 	const [modalVisible, setModalVisible] = useState(false);
 	const [canMakeCall, setCanMakeCall] = useState(false);
@@ -52,7 +54,6 @@ const ContactDetailView = ({ route, navigation }) => {
 				await fileManager.removeContact(fileName);
 				const newFileName = `${updatedName}-${contact}.json`;
 				await fileManager.saveContact(updatedName, updatedPhone, photoToSave);
-				Alert.alert("Success", "Contact updated successfully.");
 			} else if (source === "device") {
 				const existingContact = await Contacts.getContactByIdAsync(contact);
 				if (!existingContact) {
@@ -73,27 +74,22 @@ const ContactDetailView = ({ route, navigation }) => {
 				};
 
 				await Contacts.updateContactAsync(updatedContact);
-				Alert.alert("Success", "Contact updated successfully.");
 			}
+
+			// Update contacts in context
+			setContacts((prevContacts) =>
+				prevContacts.map((c) =>
+					c.id === contact
+						? { ...c, name: updatedName, phone: updatedPhone, photo: updatedPhoto || photo }
+						: c
+				)
+			);
+
+			Alert.alert("Success", "Contact updated successfully.");
 			navigation.goBack();
 		} catch (error) {
 			console.error("Error updating contact:", error);
 			Alert.alert("Error", "Failed to update contact.");
-		}
-	};
-
-	const handleDeleteContact = async (contactId) => {
-		try {
-			if (source === "file") {
-				await fileManager.removeContact(fileName);
-			} else if (source === "device") {
-				await Contacts.removeContactAsync(contactId);
-			}
-			Alert.alert("Success", "Contact deleted successfully.");
-			navigation.goBack();
-		} catch (error) {
-			console.error("Failed to delete contact:", error);
-			Alert.alert("Error", "Failed to delete contact.");
 		}
 	};
 
@@ -113,7 +109,9 @@ const ContactDetailView = ({ route, navigation }) => {
 			<View style={styles.centeredContent}>
 				<View style={styles.cardContainer}>
 					{photo ? (
-						<Image source={{ uri: photo }} style={styles.image} />
+						<Image
+							source={{ uri: photo }} style={styles.image}
+						/>
 					) : (
 						<View style={styles.imagePlaceholder}>
 							<Text style={styles.imagePlaceholderText}>No Image</Text>
@@ -123,25 +121,6 @@ const ContactDetailView = ({ route, navigation }) => {
 					<Text style={styles.phone}>{phone}</Text>
 				</View>
 			</View>
-			{/* Delete Button in View */}
-			<TouchableOpacity
-				style={styles.deleteButton}
-				onPress={() => {
-					Alert.alert(
-						"Delete Contact",
-						`Are you sure you want to delete ${name}?`,
-						[
-							{ text: "Cancel", style: "cancel" },
-							{
-								text: "Delete",
-								style: "destructive",
-								onPress: async () => await handleDeleteContact(contact),
-							},
-						]
-					);
-				}}>
-				<Text style={styles.deleteButtonText}>Delete Contact</Text>
-			</TouchableOpacity>
 			<ContactModal
 				visible={modalVisible}
 				onClose={() => setModalVisible(false)}
@@ -154,12 +133,11 @@ const ContactDetailView = ({ route, navigation }) => {
 					setModalVisible(false);
 				}}
 				submitButtonText="Save Changes"
-				onDelete={handleDeleteContact}
-				contactId={contact}
 			/>
 		</View>
 	);
 };
+
 
 const styles = StyleSheet.create({
 	container: {

@@ -14,12 +14,12 @@ import { filterContacts } from "../services/Searching";
 import { useNavigation } from "@react-navigation/native";
 import * as fileManager from "../services/fileManager"; // Import getAllContacts function
 import * as Contacts from "expo-contacts";
+import {useContacts} from "../Context/AppContext"
 
 const ContactView = () => {
 	const navigation = useNavigation();
 	const [searchQuery, setSearchQuery] = useState("");
-
-	const [contacts, setContacts] = useState([]);
+	const {contacts, setContacts} = useContacts();
 
 	const filteredContacts = filterContacts(contacts, searchQuery);
 
@@ -109,20 +109,6 @@ const ContactView = () => {
 			// Reload contacts to ensure state consistency
 			await loadContacts();
 		}
-	};
-
-	const handleClearContacts = async () => {
-		Alert.alert("Confirm", "Are you sure you want to delete all contacts?", [
-			{ text: "Cancel", style: "cancel" },
-			{
-				text: "Delete",
-				style: "destructive",
-				onPress: async () => {
-					await fileManager.cleanDirectory();
-					await loadContacts();
-				},
-			},
-		]);
 	};
 
 	useEffect(() => {
