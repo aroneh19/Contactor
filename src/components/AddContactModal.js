@@ -9,7 +9,6 @@ import {
 	Image,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { saveContact } from "../services/fileManager";
 
 const AddContactModal = ({ visible, onClose, onAddContact }) => {
 	const [name, setName] = useState("");
